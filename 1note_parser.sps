@@ -1,4 +1,4 @@
-﻿* TODO: get multiline comments into one row.
+* TODO: get multiline comments into one row.
 
 GET DATA  /TYPE=TXT
   /FILE="c:\temp\planet-notes-171125.osn"
@@ -41,6 +41,24 @@ char.index(char.substr(v1,char.index(v1,' lon="')+6),'"')-1),
 ".",","),
 f18.8).
 
+* put multiline comments into one row.
+compute potential=1.
+if char.index(ltrim(v1),"<note")>0 | char.index(ltrim(v1),"</note")>0 potential=0.
+compute firstrow=0.
+if char.index(ltrim(v1),"<comment action=")=1 firstrow=1.
+compute lastrow=0.
+if char.index(ltrim(v1),"</comment>")>0 lastrow=1.
+if (firstrow=0 & lag(firstrow)=1 & lag(lastrow)=0) | firstrow=0 & potential=1 v1=concat(ltrim(rtrim(lag(v1)))," ",ltrim(rtrim(v1))).
+
+*  remove the incomplete lines.
+compute delete_me=0.
+if potential=1 & lastrow=0 delete_me=1.
+FILTER OFF.
+USE ALL.
+SELECT IF (delete_me=0).
+EXECUTE.
+delete variables potential firstrow lastrow.
+
 * find the action.
 if char.index(v1,'<comment action="opened"')>0 action=1.
 if char.index(v1,'<comment action="closed"')>0 action=2.
@@ -77,6 +95,7 @@ char.index(char.substr(v1,char.index(v1,' user="')+7),'"')-1).
 * add the noteID to all the rows related to the note.
 if missing(note) note_id=lag(note_id).
 
+
 * make some time variables.
 compute year=number(char.substr(timestamp,1,4),f4.0).
 compute month=number(char.substr(timestamp,6,2),f2.0).
@@ -101,7 +120,7 @@ alter type year (f4.0).
 alter type month day hour minute second (f2.0).
 EXECUTE.
 
-* keep only the main records (actions and comments). Note that notes with hard breaks in the text lose most of the comment.
+* keep only the main records (actions and comments).
 FILTER OFF.
 USE ALL.
 SELECT IF (note > 0 | action > 0).
@@ -112,6 +131,3 @@ SAVE OUTFILE='c:\temp\notes_and_comments.sav'
 delete variables v1.
 SAVE OUTFILE='c:\temp\notes_without_comments.sav'
   /COMPRESSED.
-
-
-

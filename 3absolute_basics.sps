@@ -27,7 +27,7 @@ dataset activate basics.
 
 
 GET
-  FILE='D:\OSM\notes\processed_data\joined_ids.sav'.
+  FILE='c:\temp\joined_ids.sav'.
 DATASET NAME geo WINDOW=FRONT.
 
 

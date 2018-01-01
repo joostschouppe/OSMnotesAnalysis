@@ -1,4 +1,4 @@
-* TODO: get multiline comments into one row.
+﻿* TODO: get multiline comments into one row.
 
 GET DATA  /TYPE=TXT
   /FILE="c:\temp\planet-notes-171125.osn"
@@ -131,3 +131,6 @@ SAVE OUTFILE='c:\temp\notes_and_comments.sav'
 delete variables v1.
 SAVE OUTFILE='c:\temp\notes_without_comments.sav'
   /COMPRESSED.
+
+
+
